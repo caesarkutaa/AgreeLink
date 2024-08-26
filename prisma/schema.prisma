@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum STATUS {
+  PENDING
+  ACSEPTED
+  REJECTED
+}
+
+enum STATE {
+  PENDING
+  ACTIVE
+  COMPLETED
+}
+
+model User {
+  id                 String         @id @default(uuid())
+  username           String
+  email              String         @unique
+  password           String
+  verified Boolean @default(false)
+  createdAt          DateTime       @default(now())
+  proposalsCreated   Proposal[]     @relation("ProposalsCreated")
+  proposalsReceived  Proposal[]     @relation("ProposalsReceived")
+  agreementsClient   Agreements[]   @relation("clientAgreements")
+  agreementsProvider Agreements[]   @relation("providerAgreements")
+  signatures         Signature[]
+}
+
+model Proposal {
+  id                String       @id @default(uuid())
+  title             String
+  description       String
+  duration          Int
+  paymentTerms      String
+  status            STATUS       @default(PENDING)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @default(now())
+  clientId          String
+  serviceProviderId String
+  client            User         @relation("ProposalsCreated", fields: [clientId], references: [id])
+  serviceProvider   User         @relation("ProposalsReceived", fields: [serviceProviderId], references: [id])
+  agreements        Agreements[]
+}
+
+model Agreements {
+  id                String       @id @default(uuid())
+  proposalId        String
+  clientId          String
+  serviceProviderId String
+  state            STATE       @default(PENDING)
+  createdAt         DateTime     @default(now())
+  signedAt          DateTime?
+  proposal          Proposal     @relation(fields: [proposalId], references: [id])
+  client            User         @relation("clientAgreements", fields: [clientId], references: [id])
+  serviceProvider   User         @relation("providerAgreements", fields: [serviceProviderId], references: [id])
+  signatures        Signature[]
+  payments          Payment[]
+}
+
+model Signature {
+  id          String     @id @default(uuid())
+  agreementId String
+  userId      String
+  signature   String
+  signedAt    DateTime   @default(now())
+  agreement   Agreements @relation(fields: [agreementId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
+}
+
+model Payment {
+  id           String      @id @default(uuid())
+  agreementId  String
+  amount       Float
+  paymentMethod String
+  status       String      @default("Pending")
+  createdAt    DateTime    @default(now())
+  processedAt  DateTime?
+  agreement    Agreements  @relation(fields: [agreementId], references: [id])
+}
