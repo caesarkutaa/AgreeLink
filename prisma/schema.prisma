@@ -9,7 +9,7 @@ datasource db {
 
 enum STATUS {
   PENDING
-  ACSEPTED
+  ACCEPTED
   REJECTED
 }
 
