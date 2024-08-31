@@ -28,6 +28,7 @@ model User {
   createdAt          DateTime       @default(now())
   proposalsCreated   Proposal[]     @relation("ProposalsCreated")
   proposalsReceived  Proposal[]     @relation("ProposalsReceived")
+   proposalsCreatedBy Proposal[]     @relation("ProposalsCreatedBy") 
   agreementsClient   Agreements[]   @relation("clientAgreements")
   agreementsProvider Agreements[]   @relation("providerAgreements")
   signatures         Signature[]
@@ -44,8 +45,10 @@ model Proposal {
   updatedAt         DateTime     @default(now())
   clientId          String
   serviceProviderId String
+  createdById       String 
   client            User         @relation("ProposalsCreated", fields: [clientId], references: [id])
   serviceProvider   User         @relation("ProposalsReceived", fields: [serviceProviderId], references: [id])
+  createdBy         User         @relation("ProposalsCreatedBy", fields: [createdById], references: [id])
   agreements        Agreements[]
 }
 
