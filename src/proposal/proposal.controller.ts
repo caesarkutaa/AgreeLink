@@ -1,45 +1,39 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, ValidationPipe, UseGuards } from '@nestjs/common';
 import { ProposalService } from './proposal.service';
-import { Proposal, STATUS } from '@prisma/client';
+import { CreateProposalDto } from './dto/create-proposal.dto';
+import { GetUser } from '../auth/decorator';
+import { UpdateProposalDto } from './dto/update-proposal.dto';
+import { JwtGuard } from '../auth/guard';
 
 @Controller('proposals')
 export class ProposalController {
   constructor(private readonly proposalService: ProposalService) {}
 
+  @UseGuards(JwtGuard)
   @Post()
   async createProposal(
-    @Body() data: { clientId: string; serviceProviderId: string; status: STATUS; title: string; description: string; duration: number; paymentTerms: string }
-  ): Promise<Proposal> {
-    const { clientId, serviceProviderId, status, ...otherData } = data;
-
-    return this.proposalService.createProposal({
-      ...otherData,
-      status,
-      clientId,
-      serviceProviderId,
-    });
+    @GetUser('id') userId: string,
+    @Body(new ValidationPipe()) dto: CreateProposalDto
+  ) {
+    return this.proposalService.createProposal(dto, userId);
   }
 
   @Get()
-  async getAllProposals(): Promise<{ proposals: Proposal[]; count: number }> {
-    return this.proposalService.getAllProposals();
+  async getAllProposals(@GetUser('id') userId: string) {
+    return this.proposalService.getAllProposals(userId);
   }
 
   @Get(':id')
-  async getProposalById(@Param('id') id: string): Promise<Proposal> {
+  async getProposalById(@Param('id') id: string) {
     return this.proposalService.getProposalById(id);
   }
 
   @Patch(':id')
   async updateProposal(
     @Param('id') id: string,
-    @Body() data: Partial<Omit<Proposal, 'id' | 'createdAt' | 'updatedAt'>>
-  ): Promise<{ message: string; proposal: Proposal }> {
-    const { status, ...otherData } = data;
-    return this.proposalService.updateProposal(id, {
-      ...otherData,
-      status: status as STATUS, // Use STATUS enum directly
-    });
+    @Body() dto: UpdateProposalDto
+  ) {
+    return this.proposalService.updateProposal(id, dto);
   }
 
   @Delete(':id')
@@ -47,11 +41,3 @@ export class ProposalController {
     return this.proposalService.deleteProposal(id);
   }
 }
-
-
-
-
-
-
-
-

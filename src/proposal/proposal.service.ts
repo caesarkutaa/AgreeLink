@@ -1,70 +1,57 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, Proposal } from '@prisma/client';
+import { CreateProposalDto } from './dto/create-proposal.dto';
+import { UpdateProposalDto } from './dto/update-proposal.dto';
 
 @Injectable()
 export class ProposalService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createProposal(
-    data: Omit<Prisma.ProposalCreateInput, 'client' | 'serviceProvider'> & { clientId: string; serviceProviderId: string }
-  ): Promise<Proposal> {
-    const { clientId, serviceProviderId, ...otherData } = data;
+  async createProposal(dto: CreateProposalDto, userId: string) {
+    try {
+      console.log(userId)
+      if (!userId) {
+        throw new Error('User ID must be provided');
+      }
 
-    if (!clientId || !serviceProviderId) {
-      throw new Error('Both clientId and serviceProviderId must be provided');
+      const clientExists = await this.prisma.user.findUnique({
+        where: { id: dto.client },
+      });
+    
+      const serviceProviderExists = await this.prisma.user.findUnique({
+        where: { id: dto.serviceProvider },
+      });
+    
+      const createdByExists = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+    
+      if (!clientExists || !serviceProviderExists || !createdByExists) {
+        throw new Error('One or more users not found');
+      }
+    
+
+      return await this.prisma.proposal.create({
+        data: {
+          title: dto.title,
+          description: dto.description,
+          duration: dto.duration,
+          paymentTerms: dto.paymentTerms,
+          status: dto.status,
+          client: { connect: { id: dto.client } },
+          serviceProvider: { connect: { id: dto.serviceProvider } },
+          createdBy: { connect: { id: userId } }
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Unable to create proposal'); // Customize error handling as needed
     }
-
-    return this.prisma.proposal.create({
-      data: {
-        ...otherData,
-        client: {
-          connect: { id: clientId },
-        },
-        serviceProvider: {
-          connect: { id: serviceProviderId },
-        },
-      },
-      include: {
-        client: {
-          select: {
-            id: true,
-            email: true,
-            password: false, // Exclude password
-            username: true,
-          },
-        },
-        serviceProvider: {
-          select: {
-            id: true,
-            email: true,
-            password: false, // Exclude password
-            username: true,
-          },
-        },
-      },
-    });
   }
 
-  async getAllProposals(): Promise<{ proposals: Proposal[]; count: number }> {
+  async getAllProposals(userId: string) {
     const proposals = await this.prisma.proposal.findMany({
-      include: {
-        client: {
-          select: {
-            id: true,
-            email: true,
-            password: false, // Exclude password
-          },
-        },
-        serviceProvider: {
-          select: {
-            id: true,
-            email: true,
-            password: false, // Exclude password
-            username: true,
-          },
-        },
-      },
+      where: { createdById: userId }
     });
 
     const count = proposals.length;
@@ -72,27 +59,9 @@ export class ProposalService {
     return { proposals, count };
   }
 
-  async getProposalById(id: string): Promise<Proposal> {
+  async getProposalById(id: string) {
     const proposal = await this.prisma.proposal.findUnique({
       where: { id },
-      include: {
-        client: {
-          select: {
-            id: true,
-            email: true,
-            password: false, // Exclude password
-            username: true,
-          },
-        },
-        serviceProvider: {
-          select: {
-            id: true,
-            email: true,
-            password: false, // Exclude password
-            username: true,
-          },
-        },
-      },
     });
 
     if (!proposal) {
@@ -102,28 +71,10 @@ export class ProposalService {
     return proposal;
   }
 
-  async updateProposal(id: string, data: Prisma.ProposalUpdateInput): Promise<{ message: string; proposal: Proposal }> {
+  async updateProposal(id: string, dto: UpdateProposalDto) {
     const proposal = await this.prisma.proposal.update({
       where: { id },
-      data,
-      include: {
-        client: {
-          select: {
-            id: true,
-            email: true,
-            password: false, // Exclude password
-            username: true,
-          },
-        },
-        serviceProvider: {
-          select: {
-            id: true,
-            email: true,
-            password: false, // Exclude password
-            username: true,
-          },
-        },
-      },
+      data: dto,
     });
 
     return { message: `Proposal with ID ${id} has been updated`, proposal };
