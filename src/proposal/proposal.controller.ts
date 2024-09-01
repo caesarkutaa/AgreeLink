@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, ValidationPipe, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  ValidationPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { ProposalService } from './proposal.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { GetUser } from '../auth/decorator';
@@ -13,7 +23,7 @@ export class ProposalController {
   @Post()
   async createProposal(
     @GetUser('id') userId: string,
-    @Body(new ValidationPipe()) dto: CreateProposalDto
+    @Body(new ValidationPipe()) dto: CreateProposalDto,
   ) {
     return this.proposalService.createProposal(dto, userId);
   }
@@ -31,7 +41,7 @@ export class ProposalController {
   @Patch(':id')
   async updateProposal(
     @Param('id') id: string,
-    @Body() dto: UpdateProposalDto
+    @Body() dto: UpdateProposalDto,
   ) {
     return this.proposalService.updateProposal(id, dto);
   }
