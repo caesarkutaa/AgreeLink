@@ -9,6 +9,7 @@ export class ProposalService {
 
   constructor(private readonly prisma: PrismaService) {}
 
+  //create proposal with the both client and service provider email 
   async createProposal(dto: CreateProposalDto, userId: string) {
     this.logger.log(`Creating a proposal by user: ${userId}`);
          
