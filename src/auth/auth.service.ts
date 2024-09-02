@@ -79,7 +79,7 @@ import {
         const hashedPassword = await argon.hash(password);
         const newUser = await this.prisma.user.create({
           data: {
-            email,
+            email,   
             password: hashedPassword,
             username,
           },
@@ -100,6 +100,7 @@ import {
           },
         };
       } catch (error) {
+        console.log('Validation errors:', error);
         this.logger.error(
           `Register error - email: ${registerDto.email}`,
           error.stack,

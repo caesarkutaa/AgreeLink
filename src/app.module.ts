@@ -9,13 +9,13 @@ import { AgreementsModule } from './agreements/agreements.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-    isGlobal: true, // This makes the ConfigModule global
+    isGlobal: true, 
   }),
-  AuthModule,
+  AuthModule,     
   ProposalModule,
   AgreementsModule],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
-    
+            
