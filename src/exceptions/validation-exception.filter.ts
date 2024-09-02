@@ -14,7 +14,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const status = exception.getStatus();
     const errorResponse = exception.getResponse();
-    
+
     let errors: any = [];
 
     // Check if errorResponse is an object with a 'message' property
