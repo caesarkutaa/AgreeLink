@@ -111,6 +111,7 @@ export class ProposalService {
     }
   }
 
+
   async deleteProposal(id: string): Promise<{ message: string }> {
     this.logger.log(`Deleting proposal with ID: ${id}`);
     try {
