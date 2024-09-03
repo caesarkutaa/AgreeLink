@@ -146,7 +146,7 @@ export class ProposalService {
   }
 
   async deleteProposal(id: string) {
-    this.logger.log(`Attempt To update  Proposal: ${id}`);
+    this.logger.log(`Attempt To delete  Proposal: ${id}`);
     try {
       if (!id) {
         this.logger.warn(`ID ${id} not found`);
