@@ -1,3 +1,4 @@
+
 import { Injectable, NotFoundException, Logger, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
@@ -9,13 +10,14 @@ export class ProposalService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  //create proposal with the both client and service provider email 
+  // Create a proposal with both client and service provider email
   async createProposal(dto: CreateProposalDto, userId: string) {
     this.logger.log(`Creating a proposal by user: ${userId}`);
-         
+
     try {
       if (!userId) {
-        throw new Error('User ID must be provided');
+        this.logger.warn(`User not found for email: ${userId}`);
+        throw new NotFoundException('User not found');
       }
 
       const client = await this.prisma.user.findUnique({
@@ -52,6 +54,7 @@ export class ProposalService {
   }
 
   async getAllProposals(userId: string) {
+    this.logger.log(`Fetching all proposals for user: ${userId}`);
     try {
       const proposals = await this.prisma.proposal.findMany({
         where: { createdById: userId },
@@ -68,12 +71,14 @@ export class ProposalService {
   }
 
   async getProposalById(id: string) {
+    this.logger.log(`Fetching proposal with ID: ${id}`);
     try {
       const proposal = await this.prisma.proposal.findUnique({
         where: { id },
       });
 
       if (!proposal) {
+        this.logger.warn(`Proposal with ID ${id} not found`);
         throw new NotFoundException(`Proposal with ID ${id} not found`);
       }
 
@@ -86,6 +91,7 @@ export class ProposalService {
   }
 
   async updateProposal(id: string, dto: UpdateProposalDto) {
+    this.logger.log(`Updating proposal with ID: ${id}`);
     try {
       const proposal = await this.prisma.proposal.update({
         where: { id },
@@ -101,6 +107,7 @@ export class ProposalService {
   }
 
   async deleteProposal(id: string): Promise<{ message: string }> {
+    this.logger.log(`Deleting proposal with ID: ${id}`);
     try {
       await this.prisma.proposal.delete({
         where: { id },

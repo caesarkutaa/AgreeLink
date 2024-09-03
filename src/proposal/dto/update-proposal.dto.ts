@@ -1,10 +1,10 @@
 import { IsString, IsOptional, IsInt, IsEnum, IsNotEmpty } from 'class-validator';
 
 export enum STATUS {
-    PENDING = 'PENDING',
-    ACCEPTED = 'ACCEPTED',
-    REJECTED = 'REJECTED',
-  }
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+}
 
 export class UpdateProposalDto {
   @IsString({ message: 'Title must be a string' })

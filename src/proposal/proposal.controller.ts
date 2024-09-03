@@ -1,3 +1,4 @@
+
 import { Controller, Get, Post, Body, Param, Patch, Delete, ValidationPipe, UseGuards, UseFilters, Logger } from '@nestjs/common';
 import { ProposalService } from './proposal.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
@@ -17,7 +18,7 @@ export class ProposalController {
   @Post()
   async createProposal(
     @GetUser('id') userId: string,
-    @Body(new ValidationPipe()) dto: CreateProposalDto
+    @Body(new ValidationPipe()) dto: CreateProposalDto,
   ) {
     this.logger.log(`Received request to create proposal by user: ${userId}`);
     return this.proposalService.createProposal(dto, userId);
@@ -36,7 +37,7 @@ export class ProposalController {
   @Patch(':id')
   async updateProposal(
     @Param('id') id: string,
-    @Body() dto: UpdateProposalDto
+    @Body() dto: UpdateProposalDto,
   ) {
     return this.proposalService.updateProposal(id, dto);
   }
