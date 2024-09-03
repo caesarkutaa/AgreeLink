@@ -100,7 +100,6 @@ import {
           },
         };
       } catch (error) {
-        console.log('Validation errors:', error);
         this.logger.error(
           `Register error - email: ${registerDto.email}`,
           error.stack,

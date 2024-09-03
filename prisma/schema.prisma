@@ -59,7 +59,7 @@ model Agreements {
   serviceProviderId String
   state            STATE       @default(PENDING)
   createdAt         DateTime     @default(now())
-  signedAt          DateTime    @default(now())
+  signedAt          DateTime    
   proposal          Proposal     @relation(fields: [proposalId], references: [id])
   client            User         @relation("clientAgreements", fields: [clientId], references: [id])
   serviceProvider   User         @relation("providerAgreements", fields: [serviceProviderId], references: [id])

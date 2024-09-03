@@ -2,20 +2,22 @@ import { IsNotEmpty, IsString, IsEnum, IsOptional } from 'class-validator';
 import { STATE } from '@prisma/client';
 
 export class CreateAgreementDto {
-  @IsNotEmpty()
-  @IsString()
+  @IsString({ message: ' Proposal Id must be a string' })
+  @IsNotEmpty({ message: 'Proposal Id cannot be empty' })
   proposalId: string;
 
-  @IsNotEmpty()
-  @IsString()
+
+  @IsString({ message: ' Client  Id must be a string' })
+  @IsNotEmpty({ message: 'Client Id cannot be empty' })
   clientId: string;
 
-  @IsNotEmpty()
-  @IsString()
+
+  @IsString({ message: 'ServiceProvider  Id must be a string' })
+  @IsNotEmpty({ message: 'ServiceProvider Id cannot be empty' })
   serviceProviderId: string;
 
   @IsOptional()
-  @IsEnum(STATE)
+  @IsEnum(STATE, { message: 'State must be PENDING, ACTIVE, or COMPLETED' })
   state?: STATE;
 }
 
