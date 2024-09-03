@@ -57,7 +57,7 @@ export class AuthService {
     } catch (error) {
       this.logger.error(`Login error - email: ${dto.email}`, error.stack);
       throw new HttpException(
-        'Error creating user',
+        'Error logging in',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -86,7 +86,7 @@ export class AuthService {
       });
       if (!newUser)
         return new HttpException(
-          'Error occured during signup',
+          'Error occurred during signup',
           HttpStatus.BAD_REQUEST,
         );
       delete newUser.password;
@@ -113,74 +113,22 @@ export class AuthService {
         );
       }
     }
-<<<<<<<<< Temporary merge branch 1
-=========
-  
-    async register(registerDto: RegisterDto) {
-      try {
-        this.logger.log(`Register attempt - email: ${registerDto.email}`);
-        const { email, password, username } = registerDto;
-        const existingUser = await this.prisma.user.findUnique({
-          where: { email },
-        });
-  
-        if (existingUser) {
-          this.logger.warn(`Email already in use - email: ${email}`);
-          throw new ConflictException('Email already in use');
-        }
-  
-        const hashedPassword = await argon.hash(password);
-        const newUser = await this.prisma.user.create({
-          data: {
-            email,   
-            password: hashedPassword,
-            username,
-          },
-        });
-        if (!newUser)
-          return new HttpException(
-            'Error occured during signup',
-            HttpStatus.BAD_REQUEST,
-          );
-        delete newUser.password;
-        this.logger.log(`User created successfully - id: ${newUser.id}`);
-        return {
-          message: 'Registration successful',
-          data: {
-            id: newUser.id,
-            email: newUser.email,
-            username: newUser.username,
-          },
-        };
-      } catch (error) {
-        this.logger.error(
-          `Register error - email: ${registerDto.email}`,
-          error.stack,
-        );
-        if (error instanceof ConflictException) {
-          throw error; // Re-throw ConflictException directly
-        } else {
-          throw new HttpException(
-            'Error creating user',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-        }
-      }
-    }
-    async signToken(id: string, email: string): Promise<string> {
-      const payload = {
-        sub: id,
-        email,
-      };
-      const secret = this.config.get('JWT_SECRET');
-  
-      const Token = await this.jwtService.signAsync(payload, {
-        expiresIn: '5d',
-        secret: secret,
-      });
-  
-      return Token;
-    }
->>>>>>>>> Temporary merge branch 2
   }
+
+  async signToken(id: string, email: string): Promise<string> {
+    const payload = {
+      sub: id,
+      email,
+    };
+    const secret = this.config.get('JWT_SECRET');
+
+    const Token = await this.jwtService.signAsync(payload, {
+      expiresIn: '5d',
+      secret: secret,
+    });
+
+    return Token;
+  }
+}
+
   
