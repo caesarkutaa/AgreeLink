@@ -11,6 +11,7 @@ async function bootstrap() {
       instance: instance,
     }),
   });
+
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,
@@ -26,13 +27,15 @@ async function bootstrap() {
       });
     },
   }));
+
   app.setGlobalPrefix('/v1/api');
   app.enableCors();
 
-  
   app.useGlobalFilters(new GlobalExceptionFilter());
+  
   await app.listen(3000);
 }
 
 bootstrap();
+
 

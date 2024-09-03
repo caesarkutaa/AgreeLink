@@ -18,4 +18,3 @@ import { AgreementsModule } from './agreements/agreements.module';
   providers: [AppService],
 })
 export class AppModule {}
-            
