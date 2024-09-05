@@ -15,8 +15,8 @@ export class AgreementsService {
     try {
       this.logger.log(`Creating agreement for proposal ${data.proposalId}`);
       const agreement = await this.prisma.agreements.create({
-        data: {
-          state: data.state,
+        data: {   
+          state: data.state,   
           proposal: { connect: { id: data.proposalId } },
           client: { connect: { id: data.clientId } },
           serviceProvider: { connect: { id: data.serviceProviderId } },
@@ -28,7 +28,7 @@ export class AgreementsService {
       this.logger.error('Failed to create agreement', error.stack);
       throw new InternalServerErrorException('Failed to create agreement');
     }
-  }
+  }   
 
   async getAllAgreements(): Promise<Agreements[]> {
     try {
@@ -69,7 +69,7 @@ export class AgreementsService {
           proposal: true,
           client: {
             select: {
-              id: true,
+              id: true,     
               email: true,
               username: true,
             },

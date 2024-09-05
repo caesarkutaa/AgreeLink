@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsEnum, IsOptional, IsDateString } from 'class-validator';
 import { STATE } from '@prisma/client';
 
 export class CreateAgreementDto {
@@ -16,8 +16,12 @@ export class CreateAgreementDto {
   @IsNotEmpty({ message: 'ServiceProvider Id cannot be empty' })
   serviceProviderId: string;
 
+  
+
   @IsOptional()
   @IsEnum(STATE, { message: 'State must be PENDING, ACTIVE, or COMPLETED' })
-  state?: STATE;
+  state: STATE;
 }
+
+export { STATE };
 
