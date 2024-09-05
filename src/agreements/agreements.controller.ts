@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, Logger } from '@nestjs/common';
 import { AgreementsService } from './agreements.service';
-import { Agreements } from '@prisma/client';
+import { Prisma, Agreements, STATE } from '@prisma/client';
 import { CreateAgreementDto } from './dto/create-agreement.dto';
 import { UpdateAgreementDto } from './dto/update-agreement.dto';
 
