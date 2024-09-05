@@ -2,10 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AgreementsService } from './agreements.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { Logger } from '@nestjs/common';
-import { CreateAgreementDto } from './dto/create-agreement.dto';
+import { CreateAgreementDto, STATE} from './dto/create-agreement.dto';
 import { UpdateAgreementDto } from './dto/update-agreement.dto';
 import { NotFoundException, InternalServerErrorException } from '@nestjs/common';
-import {STATE} from '@prisma/client'
+
+
 
 describe('AgreementsService', () => {
   let service: AgreementsService;

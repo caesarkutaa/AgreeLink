@@ -1,5 +1,11 @@
 import { IsOptional, IsString, IsEnum } from 'class-validator';
-import { STATE } from '@prisma/client';
+
+
+export enum STATE {
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED',
+}
 
 export class UpdateAgreementDto {
   @IsString({ message: ' Proposal Id must be a string' })
@@ -18,5 +24,3 @@ export class UpdateAgreementDto {
   state: STATE;
 }
 
-
-export { STATE }
