@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, Agreements, STATE } from '@prisma/client';
+import {  Agreements, STATE } from '@prisma/client';
 import { CreateAgreementDto } from './dto/create-agreement.dto';
 import { UpdateAgreementDto } from './dto/update-agreement.dto';
 import { Logger } from '@nestjs/common';
@@ -10,8 +10,9 @@ export class AgreementsService {
   private readonly logger = new Logger(AgreementsService.name);
 
   constructor(private readonly prisma: PrismaService) {}
+  
 
-  async createAgreement(data: CreateAgreementDto): Promise<Agreements> {
+  async createAgreement(data: CreateAgreementDto) {
     try {
       this.logger.log(`Creating agreement for proposal ${data.proposalId}`);
       const agreement = await this.prisma.agreements.create({
@@ -30,7 +31,7 @@ export class AgreementsService {
     }
   }   
 
-  async getAllAgreements(): Promise<Agreements[]> {
+  async getAllAgreements() {
     try {
       this.logger.log('Fetching all agreements');
       const agreements = await this.prisma.agreements.findMany({
@@ -51,7 +52,7 @@ export class AgreementsService {
             },
           },
         },
-      });
+      });   
       this.logger.log(`Fetched ${agreements.length} agreements`);
       return agreements;
     } catch (error) {
@@ -60,7 +61,7 @@ export class AgreementsService {
     }
   }
 
-  async getAgreementById(id: string): Promise<Agreements> {
+  async getAgreementById(id: string){
     try {
       this.logger.log(`Fetching agreement with ID ${id}`);
       const agreement = await this.prisma.agreements.findUnique({
@@ -98,7 +99,7 @@ export class AgreementsService {
     }
   }
 
-  async updateAgreement(id: string, data: UpdateAgreementDto): Promise<Agreements> {
+  async updateAgreement(id: string, data: UpdateAgreementDto) {
     try {
       this.logger.log(`Updating agreement with ID ${id}`);
       const agreement = await this.prisma.agreements.update({
@@ -118,7 +119,7 @@ export class AgreementsService {
     }
   }
 
-  async deleteAgreement(id: string): Promise<{ message: string }> {
+  async deleteAgreement(id: string) {
     try {
       this.logger.log(`Deleting agreement with ID ${id}`);
       await this.prisma.agreements.delete({
@@ -135,3 +136,4 @@ export class AgreementsService {
 
 
 
+   

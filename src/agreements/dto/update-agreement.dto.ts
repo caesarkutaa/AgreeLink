@@ -18,4 +18,5 @@ export class UpdateAgreementDto {
   state: STATE;
 }
 
-export { STATE };
+
+export { STATE }
