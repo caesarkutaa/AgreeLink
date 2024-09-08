@@ -10,13 +10,13 @@ import { SignatureModule } from './signature/signature.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    AuthModule,
-    ProposalModule,
-    AgreementsModule,
-    SignatureModule,
-  ],
+    isGlobal: true, 
+  }),     
+  AuthModule,     
+  ProposalModule,     
+  AgreementsModule,
+  SignatureModule],
+
   controllers: [AppController],
   providers: [AppService],
 })

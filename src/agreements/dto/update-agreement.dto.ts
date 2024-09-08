@@ -16,7 +16,7 @@ export class UpdateAgreementDto {
   @IsString({ message: 'ServiceProvider  Id must be a string' })
   serviceProviderId: string;
 
-  @IsOptional()
+  
   @IsEnum(STATE, { message: 'State must be PENDING, ACTIVE, or COMPLETED' })
-  state?: STATE;
+  state: STATE;
 }
