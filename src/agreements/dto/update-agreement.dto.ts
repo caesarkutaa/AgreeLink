@@ -21,6 +21,6 @@ export class UpdateAgreementDto {
 
   @IsOptional()
   @IsEnum(STATE, { message: 'State must be PENDING, ACTIVE, or COMPLETED' })
-  state: STATE;
+  state?: STATE;
 }
 

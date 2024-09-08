@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { ProposalModule } from './proposal/proposal.module';
 import { AgreementsModule } from './agreements/agreements.module';
+import { SignatureModule } from './signature/signature.module';
 
 @Module({
   imports: [
@@ -12,8 +13,9 @@ import { AgreementsModule } from './agreements/agreements.module';
     isGlobal: true, 
   }),
   AuthModule,     
-  ProposalModule,
-  AgreementsModule],
+  ProposalModule,     
+  AgreementsModule,
+  SignatureModule],
   controllers: [AppController],
   providers: [AppService],
 })

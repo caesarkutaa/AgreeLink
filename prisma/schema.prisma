@@ -73,6 +73,7 @@ model Signature {
   userId      String
   signature   String
   signedAt    DateTime   @default(now())
+  imagePath   String
   agreement   Agreements @relation(fields: [agreementId], references: [id])
   user        User       @relation(fields: [userId], references: [id])
 }
