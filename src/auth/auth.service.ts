@@ -57,7 +57,7 @@ export class AuthService {
     } catch (error) {
       this.logger.error(`Login error - email: ${dto.email}`, error.stack);
       throw new HttpException(
-        'Error creating user',
+        'Error logging in',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -86,7 +86,7 @@ export class AuthService {
       });
       if (!newUser)
         return new HttpException(
-          'Error occured during signup',
+          'Error occurred during signup',
           HttpStatus.BAD_REQUEST,
         );
       delete newUser.password;
@@ -114,6 +114,7 @@ export class AuthService {
       }
     }
   }
+
   async signToken(id: string, email: string): Promise<string> {
     const payload = {
       sub: id,

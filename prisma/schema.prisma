@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
 }
 
 enum STATUS {
@@ -59,7 +60,7 @@ model Agreements {
   serviceProviderId String
   state            STATE       @default(PENDING)
   createdAt         DateTime     @default(now())
-  signedAt          DateTime?
+  signedAt          DateTime?    
   proposal          Proposal     @relation(fields: [proposalId], references: [id])
   client            User         @relation("clientAgreements", fields: [clientId], references: [id])
   serviceProvider   User         @relation("providerAgreements", fields: [serviceProviderId], references: [id])
@@ -73,6 +74,7 @@ model Signature {
   userId      String
   signature   String
   signedAt    DateTime   @default(now())
+  imagePath   String
   agreement   Agreements @relation(fields: [agreementId], references: [id])
   user        User       @relation(fields: [userId], references: [id])
 }

@@ -1,9 +1,8 @@
 import {
   Injectable,
   NotFoundException,
-  HttpException,
-  HttpStatus,
   Logger,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
@@ -11,90 +10,71 @@ import { UpdateProposalDto } from './dto/update-proposal.dto';
 
 @Injectable()
 export class ProposalService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly logger: Logger,
-  ) {}
+  private readonly logger = new Logger(ProposalService.name);
 
+  constructor(private readonly prisma: PrismaService) {}
+
+  // Create proposal with both client and service provider email
   async createProposal(dto: CreateProposalDto, userId: string) {
-    this.logger.log(`Attempt To Create A Proposal: ${userId}`);
+    this.logger.log(`Creating a proposal by user: ${userId}`);
     try {
       if (!userId) {
         this.logger.warn(`User not found for email: ${userId}`);
         throw new NotFoundException('User not found');
       }
 
-      const clientExists = await this.prisma.user.findUnique({
-        where: { id: dto.client },
+      const client = await this.prisma.user.findUnique({
+        where: { email: dto.client },
       });
 
-      const serviceProviderExists = await this.prisma.user.findUnique({
-        where: { id: dto.serviceProvider },
+      const serviceProvider = await this.prisma.user.findUnique({
+        where: { email: dto.serviceProvider },
       });
 
-      const createdByExists = await this.prisma.user.findUnique({
-        where: { id: userId },
-      });
-
-      if (!clientExists || !serviceProviderExists || !createdByExists) {
-        throw new Error('One or more users not found');
+      if (!client || !serviceProvider) {
+        throw new NotFoundException('Client or Service Provider not found');
       }
 
-      this.logger.log(`User Proposal created successfully - ID:${userId}`);
-      return await this.prisma.proposal.create({
+      const proposal = await this.prisma.proposal.create({
         data: {
           title: dto.title,
           description: dto.description,
           duration: dto.duration,
           paymentTerms: dto.paymentTerms,
           status: dto.status,
-          client: { connect: { id: dto.client } },
-          serviceProvider: { connect: { id: dto.serviceProvider } },
-          createdBy: { connect: { id: userId } },
+          clientId: client.id,
+          serviceProviderId: serviceProvider.id,
+          createdById: userId,
         },
       });
+
+      this.logger.log(`Proposal created successfully: ${proposal.id}`);
+      return proposal;
     } catch (error) {
-      this.logger.error(`Proposal error - userid: ${userId}`, error.stack);
-      throw new HttpException(
-        'Error creating Proposal',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.logger.error('Error creating proposal', error.stack);
+      throw new InternalServerErrorException('Unable to create proposal');
     }
   }
 
   async getAllProposals(userId: string) {
-    this.logger.log(`Attempt To fetch All User Proposal: ${userId}`);
+    this.logger.log(`Fetching all proposals for user: ${userId}`);
     try {
-      if (!userId) {
-        this.logger.warn(`User not found for email: ${userId}`);
-        throw new NotFoundException('User not found');
-      }
-
       const proposals = await this.prisma.proposal.findMany({
         where: { createdById: userId },
       });
-      if (!proposals) {
-        this.logger.warn(`Proposals not found`);
-        throw new NotFoundException(`Proposals not found`);
-      }
 
       const count = proposals.length;
-      this.logger.log(
-        `Attempt To fetch All User Proposal Sucessfull: ${userId}`,
-      );
 
+      this.logger.log(`Fetched ${count} proposals for user: ${userId}`);
       return { proposals, count };
     } catch (error) {
-      this.logger.error(`Proposal error - userid: ${userId}`, error.stack);
-      throw new HttpException(
-        'Error Fetching Proposal',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.logger.error('Error fetching proposals', error.stack);
+      throw new InternalServerErrorException('Unable to fetch proposals');
     }
   }
 
   async getProposalById(id: string) {
-    this.logger.log(`Attempt To fetch  Proposal: ${id}`);
+    this.logger.log(`Fetching proposal with ID: ${id}`);
     try {
       const proposal = await this.prisma.proposal.findUnique({
         where: { id },
@@ -104,60 +84,43 @@ export class ProposalService {
         this.logger.warn(`Proposal with ID ${id} not found`);
         throw new NotFoundException(`Proposal with ID ${id} not found`);
       }
-      this.logger.log(`Attempt To fetch  Proposal Sucessfull: ${id}`);
+
+      this.logger.log(`Fetched proposal with ID: ${id}`);
       return proposal;
     } catch (error) {
-      this.logger.error(`Proposal error - id: ${id}`, error.stack);
-      throw new HttpException(
-        'Error Fetching Proposal',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.logger.error(`Error fetching proposal with ID: ${id}`, error.stack);
+      throw new InternalServerErrorException('Unable to fetch proposal');
     }
   }
 
   async updateProposal(id: string, dto: UpdateProposalDto) {
-    this.logger.log(`Attempt To update  Proposal: ${id}`);
+    this.logger.log(`Updating proposal with ID: ${id}`);
     try {
-      if (!id) {
-        this.logger.warn(`ID ${id} not found`);
-        throw new NotFoundException(`ID ${id} not found`);
-      }
       const proposal = await this.prisma.proposal.update({
         where: { id },
         data: dto,
       });
 
-      if (!proposal) {
-        this.logger.warn(`Proposal with ID ${id} not updated`);
-        throw new HttpException(
-          'Error updating Proposal',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      this.logger.log(`Attempt To update Proposal Sucessfull: ${id}`);
+      this.logger.log(`Updated proposal with ID: ${id}`);
       return { message: `Proposal with ID ${id} has been updated`, proposal };
     } catch (error) {
-      this.logger.error(`Proposal error - userid: ${id}`, error.stack);
-      throw new HttpException(
-        'Error Fetching Proposal',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.logger.error(`Error updating proposal with ID: ${id}`, error.stack);
+      throw new InternalServerErrorException('Unable to update proposal');
     }
   }
 
-  async deleteProposal(id: string) {
-    this.logger.log(`Attempt To delete  Proposal: ${id}`);
+  async deleteProposal(id: string): Promise<{ message: string }> {
+    this.logger.log(`Deleting proposal with ID: ${id}`);
     try {
-      if (!id) {
-        this.logger.warn(`ID ${id} not found`);
-        throw new NotFoundException(`ID ${id} not found`);
-      }
-
       await this.prisma.proposal.delete({
         where: { id },
       });
-      this.logger.log(`Attempt To delete Proposal Sucessfull: ${id}`);
+
+      this.logger.log(`Deleted proposal with ID: ${id}`);
       return { message: `Proposal with ID ${id} has been deleted` };
-    } catch (error) {}
+    } catch (error) {
+      this.logger.error(`Error deleting proposal with ID: ${id}`, error.stack);
+      throw new InternalServerErrorException('Unable to delete proposal');
+    }
   }
 }

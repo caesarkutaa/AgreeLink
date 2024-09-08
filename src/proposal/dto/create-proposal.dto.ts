@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsInt, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsInt, IsEnum, IsEmail } from 'class-validator';
 
 export enum STATUS {
   PENDING = 'PENDING',
@@ -26,11 +26,14 @@ export class CreateProposalDto {
   @IsEnum(STATUS, { message: 'Status must be PENDING, ACCEPTED, or REJECTED' })
   status: STATUS;
 
-  @IsString({ message: 'Client ID must be a string' })
-  @IsNotEmpty({ message: 'Client ID cannot be empty' })
+  @IsNotEmpty({ message: 'Client email cannot be empty' })
+  @IsEmail({}, { message: 'Client email must be a valid email address' })
   client: string;
 
-  @IsString({ message: 'Service provider ID must be a string' })
-  @IsNotEmpty({ message: 'Service provider ID cannot be empty' })
+  @IsNotEmpty({ message: 'Service provider email cannot be empty' })
+  @IsEmail(
+    {},
+    { message: 'Service provider email must be a valid email address' },
+  )
   serviceProvider: string;
 }
