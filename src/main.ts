@@ -12,6 +12,7 @@ async function bootstrap() {
     }),
   });
 
+  // Validation pipes
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,
@@ -28,14 +29,22 @@ async function bootstrap() {
     },
   }));
 
+  // Set global API prefix
   app.setGlobalPrefix('/v1/api');
+
+  // Enable CORS
   app.enableCors();
 
+  // Set up global exception filters
   app.useGlobalFilters(new GlobalExceptionFilter());
+
+  // Get port from environment variables or default to 3000
+  const port = process.env.PORT || 3000;
   
-  await app.listen(3000);
+  // Start the application
+  await app.listen(port);
+
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 
 bootstrap();
-
-
