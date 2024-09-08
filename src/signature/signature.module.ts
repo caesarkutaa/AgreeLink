@@ -4,6 +4,6 @@ import { SignatureService } from './signature.service';
 
 @Module({
   controllers: [SignatureController],
-  providers: [SignatureService]
+  providers: [SignatureService],
 })
 export class SignatureModule {}

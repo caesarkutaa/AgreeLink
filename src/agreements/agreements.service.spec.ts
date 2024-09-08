@@ -2,11 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AgreementsService } from './agreements.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { Logger } from '@nestjs/common';
-import { CreateAgreementDto, STATE} from './dto/create-agreement.dto';
+import { CreateAgreementDto, STATE } from './dto/create-agreement.dto';
 import { UpdateAgreementDto } from './dto/update-agreement.dto';
-import { NotFoundException, InternalServerErrorException } from '@nestjs/common';
-
-
+import {
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 describe('AgreementsService', () => {
   let service: AgreementsService;
@@ -54,18 +55,17 @@ describe('AgreementsService', () => {
         clientId: 'client-123',
         serviceProviderId: 'service-provider-123',
         state: STATE.PENDING,
-     
-        
       };
       const createdAgreement = {
         id: 'agreement-123',
         ...dto,
-        createdAt: new Date(), 
+        createdAt: new Date(),
         signedAt: null,
-        
       };
 
-      jest.spyOn(prisma.agreements, 'create').mockResolvedValue(createdAgreement);
+      jest
+        .spyOn(prisma.agreements, 'create')
+        .mockResolvedValue(createdAgreement);
 
       const result = await service.createAgreement(dto);
 
@@ -76,7 +76,6 @@ describe('AgreementsService', () => {
           proposal: { connect: { id: dto.proposalId } },
           client: { connect: { id: dto.clientId } },
           serviceProvider: { connect: { id: dto.serviceProviderId } },
-          
         },
       });
     });
@@ -89,23 +88,29 @@ describe('AgreementsService', () => {
         state: STATE.PENDING,
       };
 
-      jest.spyOn(prisma.agreements, 'create').mockRejectedValue(new Error('Database error'));
+      jest
+        .spyOn(prisma.agreements, 'create')
+        .mockRejectedValue(new Error('Database error'));
 
-      await expect(service.createAgreement(dto)).rejects.toThrow(InternalServerErrorException);
+      await expect(service.createAgreement(dto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 
   describe('getAllAgreements', () => {
     it('should return an array of agreements', async () => {
-      const agreements = [{ 
-        id: 'agreement-123',
-        proposalId: 'proposal-123', 
-        clientId: 'client-123', 
-        serviceProviderId: 'service-provider-123', 
-        state: STATE.PENDING, // Use the STATE enum
-        createdAt: new Date(), 
-        signedAt: null,
-      }];
+      const agreements = [
+        {
+          id: 'agreement-123',
+          proposalId: 'proposal-123',
+          clientId: 'client-123',
+          serviceProviderId: 'service-provider-123',
+          state: STATE.PENDING, // Use the STATE enum
+          createdAt: new Date(),
+          signedAt: null,
+        },
+      ];
 
       jest.spyOn(prisma.agreements, 'findMany').mockResolvedValue(agreements);
 
@@ -116,21 +121,25 @@ describe('AgreementsService', () => {
     });
 
     it('should throw an InternalServerErrorException if retrieval fails', async () => {
-      jest.spyOn(prisma.agreements, 'findMany').mockRejectedValue(new Error('Database error'));
+      jest
+        .spyOn(prisma.agreements, 'findMany')
+        .mockRejectedValue(new Error('Database error'));
 
-      await expect(service.getAllAgreements()).rejects.toThrow(InternalServerErrorException);
+      await expect(service.getAllAgreements()).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 
   describe('getAgreementById', () => {
     it('should return a single agreement by id', async () => {
-      const agreement = { 
+      const agreement = {
         id: 'agreement-123',
-        proposalId: 'proposal-123', 
-        clientId: 'client-123', 
+        proposalId: 'proposal-123',
+        clientId: 'client-123',
         serviceProviderId: 'service-provider-123',
         state: STATE.PENDING, // Use the STATE enum
-        createdAt: new Date(), 
+        createdAt: new Date(),
         signedAt: null,
       };
 
@@ -164,13 +173,19 @@ describe('AgreementsService', () => {
     it('should throw a NotFoundException if agreement is not found', async () => {
       jest.spyOn(prisma.agreements, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.getAgreementById('non-existent-id')).rejects.toThrow(NotFoundException);
+      await expect(service.getAgreementById('non-existent-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw an InternalServerErrorException if retrieval fails', async () => {
-      jest.spyOn(prisma.agreements, 'findUnique').mockRejectedValue(new Error('Database error'));
+      jest
+        .spyOn(prisma.agreements, 'findUnique')
+        .mockRejectedValue(new Error('Database error'));
 
-      await expect(service.getAgreementById('agreement-123')).rejects.toThrow(InternalServerErrorException);
+      await expect(service.getAgreementById('agreement-123')).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 
@@ -181,16 +196,17 @@ describe('AgreementsService', () => {
         clientId: 'client-123',
         serviceProviderId: 'service-provider-123',
         state: STATE.COMPLETED, // Use the STATE enum
-        
       };
-      const updatedAgreement = { 
+      const updatedAgreement = {
         id: 'agreement-123',
-        ...dto, 
-        createdAt: new Date(), 
+        ...dto,
+        createdAt: new Date(),
         signedAt: null,
       };
 
-      jest.spyOn(prisma.agreements, 'update').mockResolvedValue(updatedAgreement);
+      jest
+        .spyOn(prisma.agreements, 'update')
+        .mockResolvedValue(updatedAgreement);
 
       const result = await service.updateAgreement('agreement-123', dto);
 
@@ -199,9 +215,13 @@ describe('AgreementsService', () => {
         where: { id: 'agreement-123' },
         data: {
           state: dto.state,
-          proposal: dto.proposalId ? { connect: { id: dto.proposalId } } : undefined,
+          proposal: dto.proposalId
+            ? { connect: { id: dto.proposalId } }
+            : undefined,
           client: dto.clientId ? { connect: { id: dto.clientId } } : undefined,
-          serviceProvider: dto.serviceProviderId ? { connect: { id: dto.serviceProviderId } } : undefined,
+          serviceProvider: dto.serviceProviderId
+            ? { connect: { id: dto.serviceProviderId } }
+            : undefined,
         },
       });
     });
@@ -214,36 +234,50 @@ describe('AgreementsService', () => {
         state: STATE.ACTIVE, // Use the STATE enum
       };
 
-      jest.spyOn(prisma.agreements, 'update').mockRejectedValue(new Error('Database error'));
+      jest
+        .spyOn(prisma.agreements, 'update')
+        .mockRejectedValue(new Error('Database error'));
 
-      await expect(service.updateAgreement('agreement-123', dto)).rejects.toThrow(InternalServerErrorException);
+      await expect(
+        service.updateAgreement('agreement-123', dto),
+      ).rejects.toThrow(InternalServerErrorException);
     });
   });
 
   describe('deleteAgreement', () => {
     it('should delete an agreement', async () => {
-      const deletedAgreement = { 
-        id: 'agreement-123', 
-        proposalId: 'proposal-123', 
-        clientId: 'client-123', 
+      const deletedAgreement = {
+        id: 'agreement-123',
+        proposalId: 'proposal-123',
+        clientId: 'client-123',
         serviceProviderId: 'service-provider-123',
         state: STATE.PENDING, // Use the STATE enum
-        createdAt: new Date(), 
+        createdAt: new Date(),
         signedAt: null,
       };
 
-      jest.spyOn(prisma.agreements, 'delete').mockResolvedValue(deletedAgreement);
+      jest
+        .spyOn(prisma.agreements, 'delete')
+        .mockResolvedValue(deletedAgreement);
 
       const result = await service.deleteAgreement('agreement-123');
 
-      expect(result).toEqual({ message: 'Agreement has been deleted successfully' });
-      expect(prisma.agreements.delete).toHaveBeenCalledWith({ where: { id: 'agreement-123' } });
+      expect(result).toEqual({
+        message: 'Agreement has been deleted successfully',
+      });
+      expect(prisma.agreements.delete).toHaveBeenCalledWith({
+        where: { id: 'agreement-123' },
+      });
     });
 
     it('should throw an InternalServerErrorException if deletion fails', async () => {
-      jest.spyOn(prisma.agreements, 'delete').mockRejectedValue(new Error('Database error'));
+      jest
+        .spyOn(prisma.agreements, 'delete')
+        .mockRejectedValue(new Error('Database error'));
 
-      await expect(service.deleteAgreement('agreement-123')).rejects.toThrow(InternalServerErrorException);
+      await expect(service.deleteAgreement('agreement-123')).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 });
