@@ -200,7 +200,10 @@ describe('ProposalService', () => {
   describe('updateProposal', () => {
     it('should update a proposal successfully', async () => {
       const id = 'proposalId';
-      const dto = { title: 'Updated Title' };
+      const dto = { 
+        title: 'Updated Title',
+             
+      };
       const updatedProposal = { id, ...dto };
 
       (prismaService.proposal.update as jest.Mock).mockResolvedValueOnce(updatedProposal);

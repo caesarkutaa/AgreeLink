@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsInt, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsInt, IsEnum, IsNotEmpty } from 'class-validator';
 
 export enum STATUS {
   PENDING = 'PENDING',
@@ -7,23 +7,19 @@ export enum STATUS {
 }
 
 export class UpdateProposalDto {
-  @IsString()
-  @IsOptional()
-  title?: string;
+  @IsString({ message: 'Title must be a string' })
+  title: string;
 
-  @IsString()
-  @IsOptional()
-  description?: string;
+  @IsString({ message: 'Description must be a string' })
+  description: string;
 
-  @IsInt()
-  @IsOptional()
-  duration?: number;
+  @IsInt({ message: 'Duration must be an integer' })
+  duration: number; // Duration in days, weeks, etc., based on your requirement
 
-  @IsString()
-  @IsOptional()
-  paymentTerms?: string;
+  @IsString({ message: 'Payment terms must be a string' })
+  paymentTerms: string;
 
   @IsEnum(STATUS, { message: 'Status must be PENDING, ACCEPTED, or REJECTED' })
-  @IsOptional()
-  status?: STATUS;
+  status: STATUS;
+
 }
