@@ -13,7 +13,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { ConfigService } from '@nestjs/config';
 import { LoginDto } from './dto/login.dto';
-  
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -130,5 +130,3 @@ export class AuthService {
     return Token;
   }
 }
-
-  

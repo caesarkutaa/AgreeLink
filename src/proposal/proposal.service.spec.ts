@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProposalService } from './proposal.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { Logger, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Logger,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { STATUS } from './dto/create-proposal.dto';
 import { AuthService } from '../auth/auth.service';
 import { ConfigService } from '@nestjs/config';
@@ -69,9 +74,8 @@ describe('ProposalService', () => {
 
   describe('createProposal', () => {
     it('should create a proposal successfully', async () => {
-      
       const userId = 'created-by-id';
-      
+
       const createProposalDto = {
         title: 'Test Proposal',
         description: 'Test Description',
@@ -81,7 +85,6 @@ describe('ProposalService', () => {
         client: userId,
         serviceProvider: 'service-provider-id',
       };
-    
 
       (prismaService.user.findUnique as jest.Mock) // For client
         .mockResolvedValue({ id: 'service-provider-id' }) // For service provider
@@ -89,7 +92,9 @@ describe('ProposalService', () => {
 
       // Mock proposal creation
       const mockProposal = { id: 'proposal-id', ...createProposalDto };
-      (prismaService.proposal.create as jest.Mock).mockResolvedValue(mockProposal);
+      (prismaService.proposal.create as jest.Mock).mockResolvedValue(
+        mockProposal,
+      );
 
       const result = await service.createProposal(createProposalDto, userId);
 
@@ -98,7 +103,9 @@ describe('ProposalService', () => {
         data: {
           ...createProposalDto,
           client: { connect: { id: userId } },
-          serviceProvider: { connect: { id: createProposalDto.serviceProvider } },
+          serviceProvider: {
+            connect: { id: createProposalDto.serviceProvider },
+          },
           createdBy: { connect: { id: userId } },
         },
       });
@@ -121,7 +128,6 @@ describe('ProposalService', () => {
     //   await expect(service.createProposal(dto, 'userId')).rejects.toThrow(NotFoundException);
     // });
 
-
     it('should log an error and throw HttpException on failure', async () => {
       const dto = {
         title: 'New Proposal',
@@ -132,10 +138,16 @@ describe('ProposalService', () => {
         client: 'clientId',
         serviceProvider: 'serviceProviderId',
       };
-      (prismaService.user.findUnique as jest.Mock).mockResolvedValueOnce({ id: 'userId' });
-      (prismaService.proposal.create as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValueOnce({
+        id: 'userId',
+      });
+      (prismaService.proposal.create as jest.Mock).mockRejectedValueOnce(
+        new Error('Error'),
+      );
 
-      await expect(service.createProposal(dto, 'userId')).rejects.toThrow(HttpException);
+      await expect(service.createProposal(dto, 'userId')).rejects.toThrow(
+        HttpException,
+      );
       expect(logger.error).toHaveBeenCalled();
     });
   });
@@ -146,15 +158,17 @@ describe('ProposalService', () => {
       const proposals = [{ id: '1' }, { id: '2' }];
 
       // Mock proposal retrieval
-      (prismaService.proposal.findMany as jest.Mock).mockResolvedValueOnce(proposals);
+      (prismaService.proposal.findMany as jest.Mock).mockResolvedValueOnce(
+        proposals,
+      );
 
       const result = await service.getAllProposals(userId);
 
       expect(result).toEqual({ proposals, count: proposals.length });
-      expect(prismaService.proposal.findMany).toHaveBeenCalledWith({ where: { createdById: userId } });
+      expect(prismaService.proposal.findMany).toHaveBeenCalledWith({
+        where: { createdById: userId },
+      });
     });
-
-
 
     // it('should throw NotFoundException if no proposals are found', async () => {
     //   (prismaService.proposal.findMany as jest.Mock).mockResolvedValueOnce([]);
@@ -163,9 +177,13 @@ describe('ProposalService', () => {
     // });
 
     it('should log an error and throw HttpException on failure', async () => {
-      (prismaService.proposal.findMany as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+      (prismaService.proposal.findMany as jest.Mock).mockRejectedValueOnce(
+        new Error('Error'),
+      );
 
-      await expect(service.getAllProposals('userId')).rejects.toThrow(HttpException);
+      await expect(service.getAllProposals('userId')).rejects.toThrow(
+        HttpException,
+      );
       expect(logger.error).toHaveBeenCalled();
     });
   });
@@ -175,12 +193,16 @@ describe('ProposalService', () => {
       const id = 'proposalId';
       const proposal = { id, title: 'Proposal' };
 
-      (prismaService.proposal.findUnique as jest.Mock).mockResolvedValueOnce(proposal);
+      (prismaService.proposal.findUnique as jest.Mock).mockResolvedValueOnce(
+        proposal,
+      );
 
       const result = await service.getProposalById(id);
 
       expect(result).toEqual(proposal);
-      expect(prismaService.proposal.findUnique).toHaveBeenCalledWith({ where: { id } });
+      expect(prismaService.proposal.findUnique).toHaveBeenCalledWith({
+        where: { id },
+      });
     });
 
     // it('should throw NotFoundException if proposal not found', async () => {
@@ -190,9 +212,13 @@ describe('ProposalService', () => {
     // });
 
     it('should log an error and throw HttpException on failure', async () => {
-      (prismaService.proposal.findUnique as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+      (prismaService.proposal.findUnique as jest.Mock).mockRejectedValueOnce(
+        new Error('Error'),
+      );
 
-      await expect(service.getProposalById('proposalId')).rejects.toThrow(HttpException);
+      await expect(service.getProposalById('proposalId')).rejects.toThrow(
+        HttpException,
+      );
       expect(logger.error).toHaveBeenCalled();
     });
   });
@@ -200,20 +226,26 @@ describe('ProposalService', () => {
   describe('updateProposal', () => {
     it('should update a proposal successfully', async () => {
       const id = 'proposalId';
-      const dto = { 
+      const dto = {
         title: 'Updated Title',
-             
       };
       const updatedProposal = { id, ...dto };
 
-      (prismaService.proposal.update as jest.Mock).mockResolvedValueOnce(updatedProposal);
+      (prismaService.proposal.update as jest.Mock).mockResolvedValueOnce(
+        updatedProposal,
+      );
 
       const result = await service.updateProposal(id, dto);
 
-      expect(result).toEqual({ message: `Proposal with ID ${id} has been updated`, proposal: updatedProposal });
-      expect(prismaService.proposal.update).toHaveBeenCalledWith({ where: { id }, data: dto });
+      expect(result).toEqual({
+        message: `Proposal with ID ${id} has been updated`,
+        proposal: updatedProposal,
+      });
+      expect(prismaService.proposal.update).toHaveBeenCalledWith({
+        where: { id },
+        data: dto,
+      });
     });
-
 
     // it('should log an error and throw HttpException on failure', async () => {
     //   (prismaService.proposal.update as jest.Mock).mockRejectedValueOnce(new Error('Error'));
@@ -227,12 +259,18 @@ describe('ProposalService', () => {
     it('should delete a proposal successfully', async () => {
       const id = 'proposalId';
 
-      (prismaService.proposal.delete as jest.Mock).mockResolvedValueOnce({ id });
+      (prismaService.proposal.delete as jest.Mock).mockResolvedValueOnce({
+        id,
+      });
 
       const result = await service.deleteProposal(id);
 
-      expect(result).toEqual({ message: `Proposal with ID ${id} has been deleted` });
-      expect(prismaService.proposal.delete).toHaveBeenCalledWith({ where: { id } });
+      expect(result).toEqual({
+        message: `Proposal with ID ${id} has been deleted`,
+      });
+      expect(prismaService.proposal.delete).toHaveBeenCalledWith({
+        where: { id },
+      });
     });
 
     // it('should log an error and throw HttpException on failure', async () => {

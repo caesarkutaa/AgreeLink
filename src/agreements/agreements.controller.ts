@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  Logger,
+} from '@nestjs/common';
 import { AgreementsService } from './agreements.service';
 import { CreateAgreementDto } from './dto/create-agreement.dto';
 import { UpdateAgreementDto } from './dto/update-agreement.dto';
@@ -10,7 +19,7 @@ export class AgreementsController {
   constructor(private readonly agreementsService: AgreementsService) {}
 
   @Post()
-  async createAgreement(@Body() data: CreateAgreementDto){
+  async createAgreement(@Body() data: CreateAgreementDto) {
     this.logger.log('Received request to create a new agreement');
     return this.agreementsService.createAgreement(data);
   }
@@ -28,7 +37,10 @@ export class AgreementsController {
   }
 
   @Patch(':id')
-  async updateAgreement(@Param('id') id: string, @Body() data: UpdateAgreementDto) {
+  async updateAgreement(
+    @Param('id') id: string,
+    @Body() data: UpdateAgreementDto,
+  ) {
     this.logger.log(`Received request to update agreement with ID ${id}`);
     return this.agreementsService.updateAgreement(id, data);
   }
@@ -39,5 +51,3 @@ export class AgreementsController {
     return this.agreementsService.deleteAgreement(id);
   }
 }
-
-

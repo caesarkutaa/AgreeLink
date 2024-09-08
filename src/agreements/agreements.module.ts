@@ -8,4 +8,3 @@ import { PrismaService } from '../prisma/prisma.service';
   providers: [AgreementsService, PrismaService],
 })
 export class AgreementsModule {}
-

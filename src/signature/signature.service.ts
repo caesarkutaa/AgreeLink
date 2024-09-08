@@ -1,4 +1,10 @@
-import { Injectable, Logger, NotFoundException, InternalServerErrorException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  InternalServerErrorException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSignatureDto } from './dto/create-signatureDto';
 import { UpdateSignatureDto } from './dto/update-signatureDto';
@@ -11,21 +17,25 @@ export class SignatureService {
 
   constructor(private prisma: PrismaService) {}
 
-  async createSignature(createSignatureDto: CreateSignatureDto, agreementId: string, userId: string) {
+  async createSignature(
+    createSignatureDto: CreateSignatureDto,
+    agreementId: string,
+    userId: string,
+  ) {
     try {
       this.logger.log('Creating new signature...');
-  
+
       // Step 1: Check if the agreement exists
       this.logger.log(`Checking for agreement with ID: ${agreementId}`);
       const agreement = await this.prisma.agreements.findUnique({
         where: { id: agreementId },
       });
-  
+
       if (!agreement) {
         this.logger.error(`Agreement with ID: ${agreementId} not found`);
         throw new NotFoundException('Agreement not found');
       }
-  
+
       // Step 2: Check if the user already signed this agreement
       const existingSignature = await this.prisma.signature.findFirst({
         where: {
@@ -33,41 +43,51 @@ export class SignatureService {
           userId,
         },
       });
-  
+
       if (existingSignature) {
-        this.logger.warn(`Signature already exists for agreement ID: ${agreementId} and user ID: ${userId}`);
-        throw new ConflictException('Signature already exists for this agreement');
+        this.logger.warn(
+          `Signature already exists for agreement ID: ${agreementId} and user ID: ${userId}`,
+        );
+        throw new ConflictException(
+          'Signature already exists for this agreement',
+        );
       }
-  
+
       // Step 3: Extract the Base64-encoded signature from the DTO
       const { signature } = createSignatureDto;
-  
+
       // Optional: Validate Base64 signature format (basic check)
       const base64Regex = /^data:image\/png;base64,/;
       if (!base64Regex.test(signature)) {
         this.logger.error('Invalid Base64 signature format');
-        throw new InternalServerErrorException('Invalid Base64 signature format');
+        throw new InternalServerErrorException(
+          'Invalid Base64 signature format',
+        );
       }
-  
+
       // Step 4: Save the Base64 signature as an image file
       const uploadDir = path.join(__dirname, '../../uploads/signatures');
       const fileName = `signature_${userId}_${Date.now()}.png`;
       const filePath = path.join(uploadDir, fileName);
-  
+
       // Ensure the directory exists
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
-  
+
       // Write the image file
       try {
-        fs.writeFileSync(filePath, signature.replace(base64Regex, ''), 'base64');
+        fs.writeFileSync(
+          filePath,
+          signature.replace(base64Regex, ''),
+          'base64',
+        );
         this.logger.log(`Signature image saved at: ${filePath}`);
       } catch (err) {
         this.logger.error('Error saving signature image', err.stack);
         throw new InternalServerErrorException('Error saving signature image');
       }
-  
+
       // Step 5: Save the signature details in the database
       const newSignature = await this.prisma.signature.create({
         data: {
@@ -78,15 +98,16 @@ export class SignatureService {
           userId,
         },
       });
-  
-      this.logger.log(`Signature created successfully with ID: ${newSignature.id}`);
+
+      this.logger.log(
+        `Signature created successfully with ID: ${newSignature.id}`,
+      );
       return newSignature;
     } catch (error) {
       this.logger.error('Error creating signature', error.stack);
       throw new InternalServerErrorException('Error creating signature');
     }
   }
-  
 
   async getAllSignatures() {
     try {
@@ -162,7 +183,7 @@ export class SignatureService {
       if (fs.existsSync(signature.imagePath)) {
         fs.unlinkSync(signature.imagePath);
         this.logger.log(`Signature image deleted: ${signature.imagePath}`);
-      }     
+      }
 
       // Delete the signature from the database
       await this.prisma.signature.delete({
