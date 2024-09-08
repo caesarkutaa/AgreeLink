@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AgreementsService } from './agreements.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { Logger } from '@nestjs/common';
-import { CreateAgreementDto, STATE} from './dto/create-agreement.dto';
-import { UpdateAgreementDto } from './dto/update-agreement.dto';
+import { CreateAgreementDto, } from './dto/create-agreement.dto';
+import { UpdateAgreementDto,STATE } from './dto/update-agreement.dto';
 import { NotFoundException, InternalServerErrorException } from '@nestjs/common';
 
 
@@ -180,7 +180,7 @@ describe('AgreementsService', () => {
         proposalId: 'proposal-123',
         clientId: 'client-123',
         serviceProviderId: 'service-provider-123',
-        state: STATE.COMPLETED, // Use the STATE enum
+        state: STATE.ACTIVE // Use the STATE enum
         
       };
       const updatedAgreement = { 

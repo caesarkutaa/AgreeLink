@@ -11,7 +11,7 @@ import { SignatureModule } from './signature/signature.module';
   imports: [
     ConfigModule.forRoot({
     isGlobal: true, 
-  }),
+  }),     
   AuthModule,     
   ProposalModule,     
   AgreementsModule,
