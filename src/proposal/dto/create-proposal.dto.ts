@@ -31,7 +31,9 @@ export class CreateProposalDto {
   client: string;
 
   @IsNotEmpty({ message: 'Service provider email cannot be empty' })
-  @IsEmail({}, { message: 'Service provider email must be a valid email address' })
+  @IsEmail(
+    {},
+    { message: 'Service provider email must be a valid email address' },
+  )
   serviceProvider: string;
 }
-

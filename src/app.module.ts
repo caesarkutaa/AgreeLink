@@ -16,6 +16,7 @@ import { SignatureModule } from './signature/signature.module';
   ProposalModule,     
   AgreementsModule,
   SignatureModule],
+
   controllers: [AppController],
   providers: [AppService],
 })

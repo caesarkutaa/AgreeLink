@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsInt, IsEnum, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  IsEnum,
+  IsNotEmpty,
+} from 'class-validator';
 
 export enum STATUS {
   PENDING = 'PENDING',
@@ -21,5 +27,4 @@ export class UpdateProposalDto {
 
   @IsEnum(STATUS, { message: 'Status must be PENDING, ACCEPTED, or REJECTED' })
   status: STATUS;
-
 }

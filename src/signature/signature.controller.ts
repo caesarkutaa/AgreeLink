@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Delete, Put, Logger, Req, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  Put,
+  Logger,
+  Req,
+  Param,
+} from '@nestjs/common';
 import { SignatureService } from './signature.service';
 import { CreateSignatureDto } from './dto/create-signatureDto';
 import { UpdateSignatureDto } from './dto/update-signatureDto';
@@ -10,13 +20,17 @@ export class SignatureController {
   constructor(private readonly signatureService: SignatureService) {}
 
   @Post()
-  async createSignature(
-    @Body() createSignatureDto: CreateSignatureDto,
-  ) {
+  async createSignature(@Body() createSignatureDto: CreateSignatureDto) {
     const { userId, agreementId } = createSignatureDto;
-  
-    this.logger.log(`Creating signature with agreement ID: ${agreementId} and user ID: ${userId}`);
-    return this.signatureService.createSignature(createSignatureDto, agreementId, userId);
+
+    this.logger.log(
+      `Creating signature with agreement ID: ${agreementId} and user ID: ${userId}`,
+    );
+    return this.signatureService.createSignature(
+      createSignatureDto,
+      agreementId,
+      userId,
+    );
   }
 
   @Get()
@@ -32,7 +46,10 @@ export class SignatureController {
   }
 
   @Put(':id')
-  async updateSignature(@Param('id') id: string, @Body() updateSignatureDto: UpdateSignatureDto) {
+  async updateSignature(
+    @Param('id') id: string,
+    @Body() updateSignatureDto: UpdateSignatureDto,
+  ) {
     this.logger.log(`Updating signature with ID: ${id} via PUT request`);
     return this.signatureService.updateSignature(id, updateSignatureDto);
   }

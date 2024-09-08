@@ -23,6 +23,3 @@ export class CreateAgreementDto {
   @IsEnum(STATE, { message: 'State must be PENDING, ACTIVE, or COMPLETED' })
   state: STATE;
 }
-
-
-

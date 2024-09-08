@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAgreementDto } from './dto/create-agreement.dto';
 import { UpdateAgreementDto } from './dto/update-agreement.dto';
@@ -9,14 +14,13 @@ export class AgreementsService {
   private readonly logger = new Logger(AgreementsService.name);
 
   constructor(private readonly prisma: PrismaService) {}
-  
 
   async createAgreement(data: CreateAgreementDto) {
     try {
       this.logger.log(`Creating agreement for proposal ${data.proposalId}`);
       const agreement = await this.prisma.agreements.create({
-        data: {   
-          state: data.state,   
+        data: {
+          state: data.state,
           proposal: { connect: { id: data.proposalId } },
           client: { connect: { id: data.clientId } },
           serviceProvider: { connect: { id: data.serviceProviderId } },
@@ -28,7 +32,7 @@ export class AgreementsService {
       this.logger.error('Failed to create agreement', error.stack);
       throw new InternalServerErrorException('Failed to create agreement');
     }
-  }   
+  }
 
   async getAllAgreements() {
     try {
@@ -51,7 +55,7 @@ export class AgreementsService {
             },
           },
         },
-      });   
+      });
       this.logger.log(`Fetched ${agreements.length} agreements`);
       return agreements;
     } catch (error) {
@@ -60,7 +64,7 @@ export class AgreementsService {
     }
   }
 
-  async getAgreementById(id: string){
+  async getAgreementById(id: string) {
     try {
       this.logger.log(`Fetching agreement with ID ${id}`);
       const agreement = await this.prisma.agreements.findUnique({
@@ -69,7 +73,7 @@ export class AgreementsService {
           proposal: true,
           client: {
             select: {
-              id: true,     
+              id: true,
               email: true,
               username: true,
             },
@@ -94,7 +98,9 @@ export class AgreementsService {
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       this.logger.error(`Failed to fetch agreement with ID ${id}`, error.stack);
-      throw new InternalServerErrorException(`Failed to fetch agreement with ID ${id}`);
+      throw new InternalServerErrorException(
+        `Failed to fetch agreement with ID ${id}`,
+      );
     }
   }
 
@@ -105,16 +111,27 @@ export class AgreementsService {
         where: { id },
         data: {
           state: data.state,
-          proposal: data.proposalId ? { connect: { id: data.proposalId } } : undefined,
-          client: data.clientId ? { connect: { id: data.clientId } } : undefined,
-          serviceProvider: data.serviceProviderId ? { connect: { id: data.serviceProviderId } } : undefined,
+          proposal: data.proposalId
+            ? { connect: { id: data.proposalId } }
+            : undefined,
+          client: data.clientId
+            ? { connect: { id: data.clientId } }
+            : undefined,
+          serviceProvider: data.serviceProviderId
+            ? { connect: { id: data.serviceProviderId } }
+            : undefined,
         },
       });
       this.logger.log(`Agreement with ID ${id} updated successfully`);
       return agreement;
     } catch (error) {
-      this.logger.error(`Failed to update agreement with ID ${id}`, error.stack);
-      throw new InternalServerErrorException(`Failed to update agreement with ID ${id}`);
+      this.logger.error(
+        `Failed to update agreement with ID ${id}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        `Failed to update agreement with ID ${id}`,
+      );
     }
   }
 
@@ -127,12 +144,13 @@ export class AgreementsService {
       this.logger.log(`Agreement with ID ${id} deleted successfully`);
       return { message: 'Agreement has been deleted successfully' };
     } catch (error) {
-      this.logger.error(`Failed to delete agreement with ID ${id}`, error.stack);
-      throw new InternalServerErrorException(`Failed to delete agreement with ID ${id}`);
+      this.logger.error(
+        `Failed to delete agreement with ID ${id}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        `Failed to delete agreement with ID ${id}`,
+      );
     }
   }
 }
-
-
-
-   
