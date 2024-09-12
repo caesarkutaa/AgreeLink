@@ -39,12 +39,16 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Get port from environment variables or default to 3000
-  const port = process.env.PORT || 3000;
-  
-  // Start the application
-  await app.listen(port);
+  const port = process.env.PORT || 3000; // Define the port variable
 
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  try {
+    await app.listen(port);
+    console.log(`Application is running on port: ${port}`);
+  } catch (err) {
+    console.error(`Error during startup: ${err.message}`);
+    process.exit(1); // Ensures the process exits with status 1 if there's an error
+  }
 }
 
 bootstrap();
+
