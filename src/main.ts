@@ -1,15 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { WinstonModule } from 'nest-winston';
-import { instance } from 'logger/winston.logger';
+// import { instance } from 'logger/winston.logger';
 import { GlobalExceptionFilter } from './exceptions/global-exceptions.filters';
 import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: WinstonModule.createLogger({
-      instance: instance,
-    }),
+    // logger: WinstonModule.createLogger({
+    //   instance: instance,
+    // }),
   });
 
   // Validation pipes

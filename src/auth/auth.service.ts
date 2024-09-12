@@ -4,7 +4,7 @@ import {
   ForbiddenException,
   HttpException,
   HttpStatus,
-  Logger,
+  // Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -20,11 +20,11 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private config: ConfigService,
-    private readonly logger: Logger,
+    // private readonly logger: Logger,
   ) {}
 
   async login(dto: LoginDto) {
-    this.logger.log(`Login attempt for email: ${dto.email}`);
+   // this.logger.log(`Login attempt for email: ${dto.email}`);
     try {
       const user = await this.prisma.user.findUnique({
         where: {
@@ -32,21 +32,21 @@ export class AuthService {
         },
       });
       if (!user) {
-        this.logger.warn(`User not found for email: ${dto.email}`);
+    //    this.logger.warn(`User not found for email: ${dto.email}`);
         throw new NotFoundException('User not found');
       }
 
       const passwordMatches = await argon.verify(user.password, dto.password);
       if (!passwordMatches) {
-        this.logger.warn(`Invalid credentials for email: ${dto.email}`);
+      //  this.logger.warn(`Invalid credentials for email: ${dto.email}`);
         throw new ForbiddenException('Credentials incorrect');
       }
 
       const token = await this.signToken(user.id, user.email);
 
-      this.logger.log(
-        `User Login successfully - ID:${user.id}, EMAIL:${user.username} `,
-      );
+      // this.logger.log(
+      //   `User Login successfully - ID:${user.id}, EMAIL:${user.username} `,
+      // );
       return {
         message: 'Login successful',
         data: {
@@ -55,7 +55,7 @@ export class AuthService {
         },
       };
     } catch (error) {
-      this.logger.error(`Login error - email: ${dto.email}`, error.stack);
+    //  this.logger.error(`Login error - email: ${dto.email}`, error.stack);
       throw new HttpException(
         'Error logging in',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -65,14 +65,14 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
     try {
-      this.logger.log(`Register attempt - email: ${registerDto.email}`);
+    //  this.logger.log(`Register attempt - email: ${registerDto.email}`);
       const { email, password, username } = registerDto;
       const existingUser = await this.prisma.user.findUnique({
         where: { email },
       });
 
       if (existingUser) {
-        this.logger.warn(`Email already in use - email: ${email}`);
+    //    this.logger.warn(`Email already in use - email: ${email}`);
         throw new ConflictException('Email already in use');
       }
 
@@ -90,7 +90,7 @@ export class AuthService {
           HttpStatus.BAD_REQUEST,
         );
       delete newUser.password;
-      this.logger.log(`User created successfully - id: ${newUser.id}`);
+    //  this.logger.log(`User created successfully - id: ${newUser.id}`);
       return {
         message: 'Registration successful',
         data: {
@@ -100,10 +100,10 @@ export class AuthService {
         },
       };
     } catch (error) {
-      this.logger.error(
-        `Register error - email: ${registerDto.email}`,
-        error.stack,
-      );
+      // this.logger.error(
+      //   `Register error - email: ${registerDto.email}`,
+      //   error.stack,
+      // );
       if (error instanceof ConflictException) {
         throw error; // Re-throw ConflictException directly
       } else {
