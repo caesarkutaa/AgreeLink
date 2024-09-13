@@ -6,7 +6,7 @@ import {
   Param,
   Patch,
   Delete,
-  Logger,
+  // Logger,
 } from '@nestjs/common';
 import { AgreementsService } from './agreements.service';
 import { CreateAgreementDto } from './dto/create-agreement.dto';
@@ -14,25 +14,25 @@ import { UpdateAgreementDto } from './dto/update-agreement.dto';
 
 @Controller('agreements')
 export class AgreementsController {
-  private readonly logger = new Logger(AgreementsController.name);
+  // private readonly logger = new Logger(AgreementsController.name);
 
   constructor(private readonly agreementsService: AgreementsService) {}
 
   @Post()
   async createAgreement(@Body() data: CreateAgreementDto) {
-    this.logger.log('Received request to create a new agreement');
+    //  this.logger.log('Received request to create a new agreement');
     return this.agreementsService.createAgreement(data);
   }
 
   @Get()
   async getAllAgreements() {
-    this.logger.log('Received request to fetch all agreements');
+    //   this.logger.log('Received request to fetch all agreements');
     return this.agreementsService.getAllAgreements();
   }
 
   @Get(':id')
   async getAgreementById(@Param('id') id: string) {
-    this.logger.log(`Received request to fetch agreement with ID ${id}`);
+    //  this.logger.log(`Received request to fetch agreement with ID ${id}`);
     return this.agreementsService.getAgreementById(id);
   }
 
@@ -41,13 +41,13 @@ export class AgreementsController {
     @Param('id') id: string,
     @Body() data: UpdateAgreementDto,
   ) {
-    this.logger.log(`Received request to update agreement with ID ${id}`);
+    //  this.logger.log(`Received request to update agreement with ID ${id}`);
     return this.agreementsService.updateAgreement(id, data);
   }
 
   @Delete(':id')
   async deleteAgreement(@Param('id') id: string) {
-    this.logger.log(`Received request to delete agreement with ID ${id}`);
+    // this.logger.log(`Received request to delete agreement with ID ${id}`);
     return this.agreementsService.deleteAgreement(id);
   }
 }

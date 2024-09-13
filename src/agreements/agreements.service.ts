@@ -7,17 +7,17 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAgreementDto } from './dto/create-agreement.dto';
 import { UpdateAgreementDto } from './dto/update-agreement.dto';
-import { Logger } from '@nestjs/common';
+// import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class AgreementsService {
-  private readonly logger = new Logger(AgreementsService.name);
+  // private readonly logger = new Logger(AgreementsService.name);
 
   constructor(private readonly prisma: PrismaService) {}
 
   async createAgreement(data: CreateAgreementDto) {
     try {
-      this.logger.log(`Creating agreement for proposal ${data.proposalId}`);
+      // this.logger.log(`Creating agreement for proposal ${data.proposalId}`);
       const agreement = await this.prisma.agreements.create({
         data: {
           state: data.state,
@@ -26,17 +26,17 @@ export class AgreementsService {
           serviceProvider: { connect: { id: data.serviceProviderId } },
         },
       });
-      this.logger.log(`Agreement created successfully with ID ${agreement.id}`);
+      // this.logger.log(`Agreement created successfully with ID ${agreement.id}`);
       return agreement;
     } catch (error) {
-      this.logger.error('Failed to create agreement', error.stack);
+      // this.logger.error('Failed to create agreement', error.stack);
       throw new InternalServerErrorException('Failed to create agreement');
     }
   }
 
   async getAllAgreements() {
     try {
-      this.logger.log('Fetching all agreements');
+      //this.logger.log('Fetching all agreements');
       const agreements = await this.prisma.agreements.findMany({
         include: {
           proposal: true,
@@ -56,17 +56,17 @@ export class AgreementsService {
           },
         },
       });
-      this.logger.log(`Fetched ${agreements.length} agreements`);
+      //  this.logger.log(`Fetched ${agreements.length} agreements`);
       return agreements;
     } catch (error) {
-      this.logger.error('Failed to fetch agreements', error.stack);
+      //  this.logger.error('Failed to fetch agreements', error.stack);
       throw new InternalServerErrorException('Failed to fetch agreements');
     }
   }
 
   async getAgreementById(id: string) {
     try {
-      this.logger.log(`Fetching agreement with ID ${id}`);
+      //    this.logger.log(`Fetching agreement with ID ${id}`);
       const agreement = await this.prisma.agreements.findUnique({
         where: { id },
         include: {
@@ -89,15 +89,15 @@ export class AgreementsService {
       });
 
       if (!agreement) {
-        this.logger.warn(`Agreement with ID ${id} not found`);
+        //      this.logger.warn(`Agreement with ID ${id} not found`);
         throw new NotFoundException(`Agreement with ID ${id} not found`);
       }
 
-      this.logger.log(`Fetched agreement with ID ${id}`);
+      //   this.logger.log(`Fetched agreement with ID ${id}`);
       return agreement;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
-      this.logger.error(`Failed to fetch agreement with ID ${id}`, error.stack);
+      //    this.logger.error(`Failed to fetch agreement with ID ${id}`, error.stack);
       throw new InternalServerErrorException(
         `Failed to fetch agreement with ID ${id}`,
       );
@@ -106,7 +106,7 @@ export class AgreementsService {
 
   async updateAgreement(id: string, data: UpdateAgreementDto) {
     try {
-      this.logger.log(`Updating agreement with ID ${id}`);
+      //      this.logger.log(`Updating agreement with ID ${id}`);
       const agreement = await this.prisma.agreements.update({
         where: { id },
         data: {
@@ -122,13 +122,13 @@ export class AgreementsService {
             : undefined,
         },
       });
-      this.logger.log(`Agreement with ID ${id} updated successfully`);
+      //    this.logger.log(`Agreement with ID ${id} updated successfully`);
       return agreement;
     } catch (error) {
-      this.logger.error(
-        `Failed to update agreement with ID ${id}`,
-        error.stack,
-      );
+      //    this.logger.error(
+      //   `Failed to update agreement with ID ${id}`,
+      //   error.stack,
+      // );
       throw new InternalServerErrorException(
         `Failed to update agreement with ID ${id}`,
       );
@@ -137,17 +137,17 @@ export class AgreementsService {
 
   async deleteAgreement(id: string) {
     try {
-      this.logger.log(`Deleting agreement with ID ${id}`);
+      // this.logger.log(`Deleting agreement with ID ${id}`);
       await this.prisma.agreements.delete({
         where: { id },
       });
-      this.logger.log(`Agreement with ID ${id} deleted successfully`);
+      //  this.logger.log(`Agreement with ID ${id} deleted successfully`);
       return { message: 'Agreement has been deleted successfully' };
     } catch (error) {
-      this.logger.error(
-        `Failed to delete agreement with ID ${id}`,
-        error.stack,
-      );
+      //  this.logger.error(
+      //   `Failed to delete agreement with ID ${id}`,
+      //   error.stack,
+      // );
       throw new InternalServerErrorException(
         `Failed to delete agreement with ID ${id}`,
       );
