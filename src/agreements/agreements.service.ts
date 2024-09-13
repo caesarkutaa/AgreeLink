@@ -56,17 +56,17 @@ export class AgreementsService {
           },
         },
       });
-    //  this.logger.log(`Fetched ${agreements.length} agreements`);
+      //  this.logger.log(`Fetched ${agreements.length} agreements`);
       return agreements;
     } catch (error) {
-    //  this.logger.error('Failed to fetch agreements', error.stack);
+      //  this.logger.error('Failed to fetch agreements', error.stack);
       throw new InternalServerErrorException('Failed to fetch agreements');
     }
   }
 
   async getAgreementById(id: string) {
     try {
-  //    this.logger.log(`Fetching agreement with ID ${id}`);
+      //    this.logger.log(`Fetching agreement with ID ${id}`);
       const agreement = await this.prisma.agreements.findUnique({
         where: { id },
         include: {
@@ -89,15 +89,15 @@ export class AgreementsService {
       });
 
       if (!agreement) {
-  //      this.logger.warn(`Agreement with ID ${id} not found`);
+        //      this.logger.warn(`Agreement with ID ${id} not found`);
         throw new NotFoundException(`Agreement with ID ${id} not found`);
       }
 
-   //   this.logger.log(`Fetched agreement with ID ${id}`);
+      //   this.logger.log(`Fetched agreement with ID ${id}`);
       return agreement;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
-  //    this.logger.error(`Failed to fetch agreement with ID ${id}`, error.stack);
+      //    this.logger.error(`Failed to fetch agreement with ID ${id}`, error.stack);
       throw new InternalServerErrorException(
         `Failed to fetch agreement with ID ${id}`,
       );
@@ -106,7 +106,7 @@ export class AgreementsService {
 
   async updateAgreement(id: string, data: UpdateAgreementDto) {
     try {
-//      this.logger.log(`Updating agreement with ID ${id}`);
+      //      this.logger.log(`Updating agreement with ID ${id}`);
       const agreement = await this.prisma.agreements.update({
         where: { id },
         data: {
@@ -122,10 +122,10 @@ export class AgreementsService {
             : undefined,
         },
       });
-  //    this.logger.log(`Agreement with ID ${id} updated successfully`);
+      //    this.logger.log(`Agreement with ID ${id} updated successfully`);
       return agreement;
     } catch (error) {
-  //    this.logger.error(
+      //    this.logger.error(
       //   `Failed to update agreement with ID ${id}`,
       //   error.stack,
       // );
@@ -137,14 +137,14 @@ export class AgreementsService {
 
   async deleteAgreement(id: string) {
     try {
-     // this.logger.log(`Deleting agreement with ID ${id}`);
+      // this.logger.log(`Deleting agreement with ID ${id}`);
       await this.prisma.agreements.delete({
         where: { id },
       });
-    //  this.logger.log(`Agreement with ID ${id} deleted successfully`);
+      //  this.logger.log(`Agreement with ID ${id} deleted successfully`);
       return { message: 'Agreement has been deleted successfully' };
     } catch (error) {
-    //  this.logger.error(
+      //  this.logger.error(
       //   `Failed to delete agreement with ID ${id}`,
       //   error.stack,
       // );

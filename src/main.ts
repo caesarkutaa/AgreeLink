@@ -13,21 +13,23 @@ async function bootstrap() {
   });
 
   // Validation pipes
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-    exceptionFactory: (errors) => {
-      return new UnprocessableEntityException({
-        statusCode: 422,
-        message: 'Validation failed',
-        errors: errors.map((error) => ({
-          field: error.property,
-          errors: Object.values(error.constraints || {}),
-        })),
-      });
-    },
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      exceptionFactory: (errors) => {
+        return new UnprocessableEntityException({
+          statusCode: 422,
+          message: 'Validation failed',
+          errors: errors.map((error) => ({
+            field: error.property,
+            errors: Object.values(error.constraints || {}),
+          })),
+        });
+      },
+    }),
+  );
 
   // Set global API prefix
   app.setGlobalPrefix('/v1/api');
@@ -51,4 +53,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
