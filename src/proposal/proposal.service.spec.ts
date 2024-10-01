@@ -74,40 +74,50 @@ describe('ProposalService', () => {
   describe('createProposal', () => {
     it('should create a proposal successfully', async () => {
       const userId = 'created-by-id';
-
+    
       const createProposalDto = {
         title: 'Test Proposal',
         description: 'Test Description',
         duration: 90,
         paymentTerms: 'Upon Completion',
         status: STATUS.PENDING,
-        client: userId,
-        serviceProvider: 'service-provider-id',
+        client: 'client-email@test.com',
+        serviceProvider: 'service-provider-email@test.com',
       };
-
-      (prismaService.user.findUnique as jest.Mock) // For client
-        .mockResolvedValue({ id: 'service-provider-id' }) // For service provider
-        .mockResolvedValue({ id: 'created-by-id' });
-
+    
+      // Mock client findUnique
+      (prismaService.user.findUnique as jest.Mock)
+        .mockResolvedValueOnce({ id: 'client-id' }) // Mocked client ID
+        .mockResolvedValueOnce({ id: 'service-provider-id' }); // Mocked service provider ID
+    
       // Mock proposal creation
-      const mockProposal = { id: 'proposal-id', ...createProposalDto };
-      (prismaService.proposal.create as jest.Mock).mockResolvedValue(
-        mockProposal,
-      );
-
+      const mockProposal = {
+        id: 'proposal-id',
+        ...createProposalDto,
+        clientId: 'client-id',
+        serviceProviderId: 'service-provider-id',
+        createdById: userId,
+      };
+      (prismaService.proposal.create as jest.Mock).mockResolvedValue(mockProposal);
+    
       const result = await service.createProposal(createProposalDto, userId);
-
+    
+      // Assertions
       expect(result).toEqual(mockProposal);
       expect(prismaService.proposal.create).toHaveBeenCalledWith({
         data: {
-          ...createProposalDto,
-          clientId: userId,          // using foreign key directly
-          createdById: userId,       // using foreign key directly
-          serviceProviderId: userId, // using foreign key directly
+          title: 'Test Proposal',
+          description: 'Test Description',
+          duration: 90,
+          paymentTerms: 'Upon Completion',
+          status: 'PENDING',
+          clientId: 'client-id', // Correct ID for client
+          serviceProviderId: 'service-provider-id', // Correct ID for service provider
+          createdById: userId, // Correct created by ID
         },
       });
-      
     });
+    
 
 
     it('should log an error and throw HttpException on failure', async () => {
