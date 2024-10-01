@@ -19,7 +19,7 @@ export class ProposalService {
      this.logger.log(`Creating a proposal by user: ${userId}`);
     try {
       if (!userId) {
-        // this.logger.warn(`User not found for email: ${userId}`);
+        this.logger.warn(`User not found for email: ${userId}`);
         throw new NotFoundException('User not found');
       }
 

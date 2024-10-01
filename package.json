@@ -22,7 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "build": "npm run generate && nest build",
     "start": "npm run generate && node dist/src/main",
-    "start:dev": "npm run generate && nest start --watch",
+    "start:dev": "nest start --watch",
     "start:debug": "npm run generate && nest start --debug --watch",
     "start:prod": "npm run generate && node dist/src/main"
   },
