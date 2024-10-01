@@ -3,14 +3,13 @@ import { ProposalService } from './proposal.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   Logger,
-  NotFoundException,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+    HttpException,
+  } from '@nestjs/common';
 import { STATUS } from './dto/create-proposal.dto';
 import { AuthService } from '../auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { UpdateProposalDto } from './dto/update-proposal.dto';
 
 describe('ProposalService', () => {
   let service: ProposalService;
@@ -102,31 +101,14 @@ describe('ProposalService', () => {
       expect(prismaService.proposal.create).toHaveBeenCalledWith({
         data: {
           ...createProposalDto,
-          client: { connect: { id: userId } },
-          serviceProvider: {
-            connect: { id: createProposalDto.serviceProvider },
-          },
-          createdBy: { connect: { id: userId } },
+          clientId: userId,          // using foreign key directly
+          createdById: userId,       // using foreign key directly
+          serviceProviderId: userId, // using foreign key directly
         },
       });
+      
     });
 
-    // it('should throw NotFoundException if any of the users do not exist', async () => {
-    //   const dto = {
-    //     title: 'New Proposal',
-    //     description: 'Proposal description',
-    //     duration: 30,
-    //     paymentTerms: 'Monthly',
-    //     status: STATUS.PENDING,
-    //     client: 'clientId',
-    //     serviceProvider: 'serviceProviderId',
-    //   };
-
-    //   // Mock user retrieval to simulate client not existing
-    //   (prismaService.user.findUnique as jest.Mock).mockResolvedValueOnce(null);
-
-    //   await expect(service.createProposal(dto, 'userId')).rejects.toThrow(NotFoundException);
-    // });
 
     it('should log an error and throw HttpException on failure', async () => {
       const dto = {
@@ -170,12 +152,6 @@ describe('ProposalService', () => {
       });
     });
 
-    // it('should throw NotFoundException if no proposals are found', async () => {
-    //   (prismaService.proposal.findMany as jest.Mock).mockResolvedValueOnce([]);
-
-    //   await expect(service.getAllProposals('userId')).rejects.toThrow(NotFoundException);
-    // });
-
     it('should log an error and throw HttpException on failure', async () => {
       (prismaService.proposal.findMany as jest.Mock).mockRejectedValueOnce(
         new Error('Error'),
@@ -205,11 +181,6 @@ describe('ProposalService', () => {
       });
     });
 
-    // it('should throw NotFoundException if proposal not found', async () => {
-    //   (prismaService.proposal.findUnique as jest.Mock).mockResolvedValueOnce(null);
-
-    //   await expect(service.getProposalById('proposalId')).rejects.toThrow(NotFoundException);
-    // });
 
     it('should log an error and throw HttpException on failure', async () => {
       (prismaService.proposal.findUnique as jest.Mock).mockRejectedValueOnce(
@@ -226,9 +197,14 @@ describe('ProposalService', () => {
   describe('updateProposal', () => {
     it('should update a proposal successfully', async () => {
       const id = 'proposalId';
-      const dto = {
+      const dto: UpdateProposalDto = {
         title: 'Updated Title',
+        description: 'Updated Description',
+        duration: 5,  // Example value
+        paymentTerms: 'Updated Payment Terms',
+        status: STATUS.ACCEPTED, // Use your enum for status
       };
+      
       const updatedProposal = { id, ...dto };
 
       (prismaService.proposal.update as jest.Mock).mockResolvedValueOnce(
@@ -246,13 +222,6 @@ describe('ProposalService', () => {
         data: dto,
       });
     });
-
-    // it('should log an error and throw HttpException on failure', async () => {
-    //   (prismaService.proposal.update as jest.Mock).mockRejectedValueOnce(new Error('Error'));
-
-    //   await expect(service.updateProposal('proposalId', {})).rejects.toThrow(HttpException);
-    //   expect(logger.error).toHaveBeenCalled();
-    // });
   });
 
   describe('deleteProposal', () => {
@@ -272,12 +241,5 @@ describe('ProposalService', () => {
         where: { id },
       });
     });
-
-    // it('should log an error and throw HttpException on failure', async () => {
-    //   (prismaService.proposal.delete as jest.Mock).mockRejectedValueOnce(new Error('Error'));
-
-    //   await expect(service.deleteProposal('proposalId')).rejects.toThrow(HttpException);
-    //   expect(logger.error).toHaveBeenCalled();
-    // });
   });
 });
